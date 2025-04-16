@@ -18,21 +18,19 @@ export async function POST(req: NextRequest) {
 
     const uploadStream = bucket.openUploadStream(file.name);
 
-    // Return a Response only after stream finishes
     await new Promise<void>((resolve, reject) => {
       stream.pipe(uploadStream)
         .on('finish', resolve)
         .on('error', reject);
     });
 
-    // Generate and return the file URL
     const fileId = uploadStream.id.toString();
     const fileUrl = `${process.env.BASE_URL}/api/file/${fileId}`;
 
     return NextResponse.json({
       message: 'PDF uploaded successfully',
-      fileId: uploadStream.id,
-      downloadUrl: `${process.env.BASE_URL}/api/file/${uploadStream.id}`,
+      fileId,
+      downloadUrl: fileUrl, // ✅ now using the variable
     });
 
   } catch (error) {
