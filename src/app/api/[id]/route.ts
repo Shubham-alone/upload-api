@@ -3,15 +3,10 @@ import { ObjectId } from 'mongodb';
 import { NextRequest } from 'next/server';
 import { Readable } from 'stream';
 
-
-export async function GET(
-  req: NextRequest,
-  context: { params: { id: string } }
-) {
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const { id } = context.params; // ❌ no await here!
-  
-
+    const { id } = params; // Destructure the 'id' from params directly
+    
     // Validate ObjectId
     if (!ObjectId.isValid(id)) {
       return new Response('Invalid ID format', { status: 400 });
