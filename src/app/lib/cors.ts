@@ -1,20 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export function cors(req: NextRequest, res: NextResponse, next: () => void) {
+export function handleCors(req: NextRequest): NextResponse | null {
   const origin = req.headers.get('origin') || '*';
+  const response = new NextResponse(null, { status: 204 });
 
-  res.headers.set('Access-Control-Allow-Origin', origin);
-  res.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.headers.set('Access-Control-Allow-Credentials', 'true');
+  response.headers.set('Access-Control-Allow-Origin', origin);
+  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  response.headers.set('Access-Control-Allow-Credentials', 'true');
 
-  // If it's a preflight request, return 200 immediately
   if (req.method === 'OPTIONS') {
-    return new Response(null, {
-      status: 204,
-      headers: res.headers,
-    });
+    return response; // 🔁 return immediately for preflight
   }
 
-  next();
+  return null; // ✅ continue processing
 }
