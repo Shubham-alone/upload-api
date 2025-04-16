@@ -3,10 +3,11 @@ import { ObjectId } from 'mongodb';
 import { NextRequest, NextResponse } from 'next/server';
 import { GridFSBucketReadStream } from 'mongodb';
 
-// Corrected GET method with proper type for downloadStream
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+// Corrected GET method
+export async function GET(req: NextRequest) {
   try {
-    const { id } = params; // Destructure the 'id' from params directly
+    // Accessing the 'id' parameter directly from the URL params in req
+    const { id } = req.nextUrl.searchParams; 
     
     // Validate ObjectId format
     if (!ObjectId.isValid(id)) {
