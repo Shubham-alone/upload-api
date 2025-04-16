@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
         uploadStream.on('error', (err) => {
           console.error('Stream error:', err);
           resolve(
-            NextResponse.json({ error: 'Upload failed', details: err }, { status: 500 })
+            NextResponse.json({ error: 'Upload failed', details: err instanceof Error ? err.message : 'Unknown error' }, { status: 500 })
           );
         });
 
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
         console.error('Upload error:', error);
         resolve(
           NextResponse.json(
-            { error: 'Upload failed', details: (error as any).message },
+            { error: 'Upload failed', details:  error instanceof Error ? error.message : 'Unknown error' },
             { status: 500 }
           )
         );
