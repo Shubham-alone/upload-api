@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '../../lib/mongodb';
 import { Readable } from 'stream';
+import { cors } from '@/app/lib/cors';
 
 export async function POST(req: NextRequest) {
   try {
