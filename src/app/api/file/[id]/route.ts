@@ -1,6 +1,6 @@
 // src/app/api/file/[id]/route.ts
 
-import { connectToDatabase } from '@/lib/mongodb'; // or use relative path
+import { connectToDatabase } from '../../../lib/mongodb'; // or use relative path
 import { ObjectId } from 'mongodb';
 import { NextRequest, NextResponse } from 'next/server';
 
