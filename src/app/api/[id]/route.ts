@@ -3,19 +3,22 @@ import { ObjectId } from 'mongodb';
 import { NextRequest } from 'next/server';
 import { Readable } from 'stream';
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+// Corrected GET method
+export async function GET(req: NextRequest, context: { params: { id: string } }) {
   try {
-    const { id } = params; // Destructure the 'id' from params directly
+    const { id } = context.params;  // Destructure the 'id' from params directly
     
-    // Validate ObjectId
+    // Validate ObjectId format
     if (!ObjectId.isValid(id)) {
       return new Response('Invalid ID format', { status: 400 });
     }
 
+    // Connect to MongoDB and get the bucket for file storage
     const { bucket } = await connectToDatabase();
-    const objectId = new ObjectId(id);
+    const objectId = new ObjectId(id);  // Convert string ID to ObjectId
     const downloadStream = bucket.openDownloadStream(objectId);
 
+    // Return the PDF file as the response
     return new Response(downloadStream as Readable, {
       headers: {
         'Content-Type': 'application/pdf',
