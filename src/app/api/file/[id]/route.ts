@@ -1,6 +1,4 @@
-// src/app/api/file/[id]/route.ts
-
-import { connectToDatabase } from '../../../lib/mongodb'; // or use relative path
+import { connectToDatabase } from '@/lib/mongodb'; // use relative path if needed
 import { ObjectId } from 'mongodb';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -15,11 +13,8 @@ function nodeStreamToWebReadableStream(nodeStream: NodeJS.ReadableStream): Reada
   });
 }
 
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  const id = params.id;
+export async function GET(req: NextRequest) {
+  const id = req.nextUrl.pathname.split('/').pop(); // Extract ID from URL
 
   if (!id || !ObjectId.isValid(id)) {
     return new NextResponse('Invalid file ID', { status: 400 });
@@ -29,7 +24,7 @@ export async function GET(
     const { bucket } = await connectToDatabase();
     const objectId = new ObjectId(id);
 
-    // Optional: Check if file exists
+    // Optional: check file existence
     const file = await bucket.find({ _id: objectId }).toArray();
     if (!file.length) {
       return new NextResponse('File not found', { status: 404 });
