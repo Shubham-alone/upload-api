@@ -1,8 +1,8 @@
-import { connectToDatabase } from '../../lib/mongodb';
+import { connectToDatabase } from '../../../lib/mongodb'; // Adjusted relative path
 import { ObjectId } from 'mongodb';
 import { NextRequest, NextResponse } from 'next/server';
 
-// Utility to convert Node stream to Web ReadableStream
+// Convert Node stream to Web ReadableStream
 function nodeStreamToWebReadableStream(nodeStream: NodeJS.ReadableStream): ReadableStream {
   return new ReadableStream({
     start(controller) {
@@ -13,9 +13,13 @@ function nodeStreamToWebReadableStream(nodeStream: NodeJS.ReadableStream): Reada
   });
 }
 
-export async function GET(req: NextRequest) {
+// 🔥 Fix here: accept route params
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
-    const id = req.nextUrl.searchParams.get('id'); // Use get() method
+    const id = params.id;
 
     if (!id || !ObjectId.isValid(id)) {
       return new NextResponse('Invalid ID format', { status: 400 });
@@ -24,7 +28,6 @@ export async function GET(req: NextRequest) {
     const { bucket } = await connectToDatabase();
     const objectId = new ObjectId(id);
     const downloadStream = bucket.openDownloadStream(objectId);
-
     const stream = nodeStreamToWebReadableStream(downloadStream);
 
     return new NextResponse(stream, {
@@ -33,7 +36,6 @@ export async function GET(req: NextRequest) {
         'Content-Disposition': 'inline; filename="downloaded.pdf"',
       },
     });
-
   } catch (error) {
     console.error('Download error:', error);
     return new NextResponse('File not found', { status: 404 });
