@@ -1,43 +1,44 @@
-import { connectToDatabase } from '../../../lib/mongodb'; // Adjusted relative path
+// src/app/api/file/[id]/route.ts
+
+import { connectToDatabase } from '../../../lib/mongodb'; // or adjust path
 import { ObjectId } from 'mongodb';
 import { NextRequest, NextResponse } from 'next/server';
 
-// Convert Node stream to Web ReadableStream
 function nodeStreamToWebReadableStream(nodeStream: NodeJS.ReadableStream): ReadableStream {
   return new ReadableStream({
     start(controller) {
-      nodeStream.on('data', (chunk) => controller.enqueue(chunk));
+      nodeStream.on('data', chunk => controller.enqueue(chunk));
       nodeStream.on('end', () => controller.close());
-      nodeStream.on('error', (err) => controller.error(err));
-    }
+      nodeStream.on('error', err => controller.error(err));
+    },
   });
 }
 
-// 🔥 Fix here: accept route params
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: NextRequest, context: { params: { id: string } }) {
+  const { id } = context.params;
+
+  if (!id || !ObjectId.isValid(id)) {
+    return new NextResponse('Invalid file ID', { status: 400 });
+  }
+
   try {
-    const id = params.id;
-
-    if (!id || !ObjectId.isValid(id)) {
-      return new NextResponse('Invalid ID format', { status: 400 });
-    }
-
     const { bucket } = await connectToDatabase();
-    const objectId = new ObjectId(id);
-    const downloadStream = bucket.openDownloadStream(objectId);
-    const stream = nodeStreamToWebReadableStream(downloadStream);
+    const downloadStream = bucket.openDownloadStream(new ObjectId(id));
+    
+    // Fetch file metadata to get filename if available
+    const file = await bucket.find({ _id: new ObjectId(id) }).toArray();
+    const filename = file[0]?.filename || 'file.pdf'; // Fallback to 'file.pdf' if filename is not found
 
-    return new NextResponse(stream, {
+    const webStream = nodeStreamToWebReadableStream(downloadStream);
+
+    return new NextResponse(webStream, {
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': 'inline; filename="downloaded.pdf"',
+        'Content-Disposition': `inline; filename="${filename}"`,
       },
     });
-  } catch (error) {
-    console.error('Download error:', error);
+  } catch (err) {
+    console.error('File error:', err);
     return new NextResponse('File not found', { status: 404 });
   }
 }
