@@ -14,7 +14,10 @@ function nodeStreamToWebReadableStream(nodeStream: NodeJS.ReadableStream): Reada
 }
 
 export async function GET(req: NextRequest) {
-  const id = req.nextUrl.pathname.split('/').pop(); // Extract ID from URL
+  const segments = req.nextUrl.pathname.split('/');
+const id = segments[segments.length - 1] || segments[segments.length - 2]; // handles trailing slash
+
+console.log('Resolved file ID:', id);
 
   if (!id || !ObjectId.isValid(id)) {
     return new NextResponse('Invalid file ID', { status: 400 });
