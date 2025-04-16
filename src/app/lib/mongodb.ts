@@ -15,3 +15,5 @@ export async function connectToDatabase() {
 
   return { db: client.db(), bucket };
 }
+
+
