@@ -14,8 +14,9 @@ function nodeStreamToWebReadableStream(nodeStream: NodeJS.ReadableStream): Reada
   });
 }
 
-export async function GET(req: NextRequest, context: { params: { id: string } }) {
-  const { id } = context.params;
+export async function GET(req: NextRequest) {
+  // Extracting the file ID directly from the URL path
+  const id = req.nextUrl.pathname.split('/').pop(); // get the last part of the path
 
   if (!id || !ObjectId.isValid(id)) {
     return new NextResponse('Invalid file ID', { status: 400 });
