@@ -39,7 +39,7 @@ console.log('Resolved file ID:', id);
     return new NextResponse(webStream, {
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="${file[0].filename}"`,
+        'Content-Disposition': `inline; filename="${file[0].filename}"`,
       },
     });
   } catch (err) {
