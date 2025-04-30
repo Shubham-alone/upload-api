@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
-import { unique } from "next/dist/build/utils";
 
-let userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
      name: {
         type: String,
         required: true
@@ -30,6 +29,6 @@ let userSchema = new mongoose.Schema({
    
 });
 
-let User = mongoose.models.User || mongoose.model("User", userSchema);
+const User = mongoose.models.User || mongoose.model("User", userSchema);
 
 export default User;

@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     let decoded;
     try {
       decoded = jwt.verify(token, JWT_SECRET) as { email: string };
-    } catch (err) {
+    } catch {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
 
     // Upload to GridFS with analysisType as the metadata itself (not nested)
     const uploadStream = bucket.openUploadStream(file.name, {
-      metadata: analysisType
+      metadata: { analysisType }
     });
     const fileId = uploadStream.id; // Get the fileId from the upload stream
 
