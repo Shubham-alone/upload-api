@@ -1,4 +1,3 @@
-// src/app/api/file/[id]/meta/route.ts
 import { connectToDatabase } from '@/app/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import { NextRequest, NextResponse } from 'next/server';
@@ -20,17 +19,14 @@ export async function GET(req: NextRequest) {
             return new NextResponse('File not found', { status: 404 });
         }
 
-        const { filename, metadata, length, uploadDate, contentType } = file[0];
+        const analysisType = file[0].metadata?.analysisType || 'unknown';
+        const baseUrl = process.env.BASE_URL || "http://localhost:3000";
 
         return NextResponse.json({
-            filename,
-            metadata,
-            length,
-            uploadDate,
-            contentType,
-            fileId: id,
-            downloadUrl: `${process.env.BASE_URL || "http://localhost:3000"}/api/file/${id}`,
+            PDFFileURL: `${baseUrl}/api/file/${id}`,
+            AnalysisType: analysisType.toLowerCase()
         });
+
     } catch (err) {
         console.error('Metadata fetch error:', err);
         return new NextResponse('Internal Server Error', { status: 500 });
