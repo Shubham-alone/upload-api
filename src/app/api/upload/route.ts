@@ -116,11 +116,10 @@ export async function POST(req: NextRequest) {
     await user.save();
 
     return NextResponse.json({
-      message: 'PDF uploaded successfully',
-      fileName: file.name,
-      analysisType,
-      showResult: true,
+      PDFFileURL: `${BASE_URL}/api/file/${fileId}`,
+      AnalysisType: analysisType.toLowerCase()
     });
+
   } catch (error) {
     console.error('Upload error:', error);
     return NextResponse.json({
