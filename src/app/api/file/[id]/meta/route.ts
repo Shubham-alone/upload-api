@@ -11,6 +11,7 @@ export async function GET(req: NextRequest) {
     }
 
     try {
+        
         const { bucket } = await connectToDatabase();
         const objectId = new ObjectId(id);
         const file = await bucket.find({ _id: objectId }).toArray();
@@ -24,7 +25,7 @@ export async function GET(req: NextRequest) {
 
         return NextResponse.json({
             PDFFileURL: `${baseUrl}/api/file/${id}`,
-            AnalysisType: analysisType.toLowerCase()
+            AnalysisType: analysisType
         });
 
     } catch (err) {

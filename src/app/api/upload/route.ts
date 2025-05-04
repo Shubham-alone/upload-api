@@ -117,7 +117,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       PDFFileURL: `${BASE_URL}/api/file/${fileId}`,
-      AnalysisType: analysisType.toLowerCase()
+      AnalysisType: analysisType
     });
 
   } catch (error) {
